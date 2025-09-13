@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PERINGATAN SISTEM!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #8b0000 0%, #400000 100%);
+            color: white;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            border-radius: 20px;
+            border: 3px solid #ff4444;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.5);
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .warning-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+            color: #ff4444;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+            color: #ff6b6b;
+        }
+        
+        p {
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .countdown {
+            font-size: 2em;
+            font-weight: bold;
+            color: #ff4444;
+            margin: 20px 0;
+        }
+        
+        .input-container {
+            margin: 30px 0;
+        }
+        
+        input {
+            padding: 15px 20px;
+            font-size: 1.2em;
+            border: 2px solid #ff4444;
+            border-radius: 10px;
+            background: #222;
+            color: white;
+            width: 100%;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        button {
+            padding: 15px 30px;
+            font-size: 1.2em;
+            background: linear-gradient(45deg, #ff4444, #ff6b6b);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #ff6b6b, #ff4444);
+        }
+        
+        .hint {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #ccc;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s ease;
+        }
+        
+        .flashing-text {
+            animation: flash 1s infinite;
+        }
+        
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .security-cam {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 80px;
+            height: 80px;
+            background: #ff4444;
+            border-radius: 50%;
+            animation: scan 3s infinite;
+        }
+        
+        @keyframes scan {
+            0% { box-shadow: 0 0 20px #ff4444; }
+            50% { box-shadow: 0 0 40px #ff4444; }
+            100% { box-shadow: 0 0 20px #ff4444; }
+        }
+    </style>
+</head>
+<body>
+    <div class="security-cam"></div>
+    
+    <div class="container">
+        <div class="warning-icon">⚠️</div>
+        <h1 class="flashing-text">PERINGATAN KEAMANAN!</h1>
+        <p>Perangkat Anda telah dikunci oleh sistem keamanan kami.</p>
+        <p>Aktivitas mencurigakan terdeteksi pada perangkat ini.</p>
+        
+        <div class="countdown" id="countdown">00:00</div>
+        
+        <div class="input-container">
+            <input type="text" id="password" placeholder="Masukkan kode keamanan..." autocomplete="off">
+            <button onclick="checkPassword()">BUKA KUNCI</button>
+        </div>
+        
+        <p class="hint">Hint: Masukkan kode khusus yang diberikan oleh administrator</p>
+    </div>
+
+    <script>
+        // Prevent right-click context menu
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // Prevent text selection
+        document.addEventListener('selectstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+        
+        // Prevent going back
+        history.pushState(null, null, document.URL);
+        window.addEventListener('popstate', function() {
+            history.pushState(null, null, document.URL);
+        });
+        
+        // Disable keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+            if (e.key === 'F12' || 
+                (e.ctrlKey && e.shiftKey && e.key === 'I') ||
+                (e.ctrlKey && e.shiftKey && e.key === 'J') ||
+                (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+                showError();
+            }
+        });
+        
+        // Fake countdown timer
+        let seconds = 0;
+        let minutes = 0;
+        const countdownElement = document.getElementById('countdown');
+        
+        setInterval(() => {
+            seconds++;
+            if (seconds === 60) {
+                seconds = 0;
+                minutes++;
+            }
+            countdownElement.textContent = 
+                minutes.toString().padStart(2, '0') + ':' + 
+                seconds.toString().padStart(2, '0');
+        }, 1000);
+        
+        // Check password function
+        function checkPassword() {
+            const password = document.getElementById('password').value;
+            
+            if (password === 'kaysgavajaugf-@--#5#&@@++fadxploit') {
+                // Correct password - unlock the device
+                unlockDevice();
+            } else {
+                // Wrong password
+                showError();
+            }
+        }
+        
+        // Show error effect
+        function showError() {
+            document.getElementById('password').value = '';
+            document.getElementById('password').classList.add('shake');
+            setTimeout(() => {
+                document.getElementById('password').classList.remove('shake');
+            }, 500);
+        }
+        
+        // Unlock function
+        function unlockDevice() {
+            document.body.style.background = 'linear-gradient(135deg, #00b09b 0%, #96c93d 100%)';
+            document.querySelector('.container').style.borderColor = '#4CAF50';
+            document.querySelector('.warning-icon').textContent = '✅';
+            document.querySelector('.warning-icon').style.color = '#4CAF50';
+            document.querySelector('h1').textContent = 'PERANGKAT DIBUKA!';
+            document.querySelector('h1').style.color = '#4CAF50';
+            document.querySelector('p').textContent = 'Perangkat Anda telah berhasil dibuka.';
+            document.querySelectorAll('p')[1].textContent = 'Sistem keamanan dinonaktifkan.';
+            
+            // Remove security restrictions
+            document.removeEventListener('contextmenu', arguments.callee);
+            document.removeEventListener('selectstart', arguments.callee);
+            window.removeEventListener('popstate', arguments.callee);
+            
+            // Show success message
+            alert('Perangkat berhasil dibuka! Anda sekarang dapat menggunakan perangkat dengan normal.');
+            
+            // Remove the security camera
+            document.querySelector('.security-cam').style.display = 'none';
+            
+            // Change button to close
+            document.querySelector('button').textContent = 'TUTUP';
+            document.querySelector('button').onclick = function() {
+                document.querySelector('.container').innerHTML = '<h1>TERIMA KASIH!</h1><p>Ini hanya simulasi keamanan. Perangkat Anda aman.</p>';
+            };
+        }
+        
+        // Enter key to submit
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+        
+        // Initial focus on input
+        document.getElementById('password').focus();
+    </script>
+</body>
+</html>
+
